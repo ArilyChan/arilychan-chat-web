@@ -16,7 +16,7 @@ Vue.directive('scroll-bottom', (el, binding, vnode) => {
 })
 
 const options = { } // Options object to pass into SocketIO
-const io = SocketIO('http://localhost:3004/chat', options)
+const io = SocketIO('http://ri.mk:3004/chat', options)
 
 Vue.use(new VueSocketIO({
   debug: true,
