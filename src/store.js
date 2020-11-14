@@ -46,7 +46,7 @@ const store = new Vuex.Store({
       // }
     ],
     // 当前选中的会话
-    currentSessionId: 1,
+    currentSessionId: undefined,
     // 过滤出只包含这个key的会话
     filterKey: ''
   },
@@ -109,18 +109,26 @@ const store = new Vuex.Store({
     // 搜索
     SET_FILTER_KEY (state, value) {
       state.filterKey = value
+    },
+    CHANGE_USERDATA (state, value) {
+      state.user.name = value.name
+      state.user.img = value.img || state.user.img
     }
   },
   actions: {
     initData: ({ commit }) => {
       commit('INIT_DATA')
     },
+    changeUserData: ({ commit }, data) => {
+      commit('CHANGE_USERDATA', data)
+    },
     sendMessage: ({ commit, state }, content) => {
       console.log(state.sessions)
       const session = state.sessions.find(item => item.id === state.currentSessionId)
       io.emit('client-message', {
         room: session.id,
-        message: content
+        message: content,
+        user: state.user
       })
       commit('SEND_MESSAGE', content)
     },
@@ -128,11 +136,12 @@ const store = new Vuex.Store({
     search: ({ commit }, value) => commit('SET_FILTER_KEY', value),
     reciveMessage: ({ commit }, content) => commit('RECV_MESSAGE', content),
     createSession: ({ commit }, data) => commit('CREATE_SESSION', data),
-    'SOCKET_joined-room': ({ dispatch }, { room, type }) => {
+    'SOCKET_joined-room': ({ dispatch, state }, { room, type }) => {
       dispatch('createSession', {
         id: room,
         type: type
       })
+      if (!state.currentSessionId) dispatch('selectSession', room)
     },
     'SOCKET_client-message': ({ dispatch }, { room, user = {}, message }) => {
       dispatch('reciveMessage', {

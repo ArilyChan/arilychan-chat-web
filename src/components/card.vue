@@ -3,12 +3,22 @@ import { mapActions, mapGetters } from 'vuex'
 // import { actions } from '../store';
 
 export default {
-
   computed: {
-    ...mapGetters(['user'])
+    ...mapGetters(['user']),
+    name: {
+      get () {
+        return this.user.name
+      },
+      set (val) {
+        if (val === '') val = null
+        this.changeUserData({
+          name: val
+        })
+      }
+    }
   },
   methods: {
-    ...mapActions(['search']),
+    ...mapActions(['search', 'changeUserData']),
     onKeyup (e) {
       this.search(e.target.value)
     }
@@ -18,9 +28,9 @@ export default {
 
 <template>
 <div class="card">
-    <header>
+    <header style="display: flex; align-items: self-end;">
         <img class="avatar" width="40" height="40" :alt="user.name" :src="user.img">
-        <p class="name">{{user.name}}</p>
+        <input class="search" v-model="name" placeholder="your id" />
     </header>
     <footer>
         <!--// eslint-disable-next-line vue/valid-v-on -->
