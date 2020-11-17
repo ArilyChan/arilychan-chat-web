@@ -1,4 +1,7 @@
 module.exports = {
   runtimeCompiler: true,
-  publicPath: './'
+  publicPath: './',
+  devServer: {
+    disableHostCheck: true
+  }ß
 }
