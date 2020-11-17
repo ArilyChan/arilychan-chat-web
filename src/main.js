@@ -7,7 +7,7 @@ import store from './store'
 import VueSocketIO from 'vue-socket.io'
 import SocketIO from 'socket.io-client'
 
-// Vue.config.devtools = true;
+Vue.config.devtools = true
 
 Vue.directive('scroll-bottom', (el, binding, vnode) => {
   vnode.context.$nextTick(() => {
@@ -35,7 +35,19 @@ new Vue({
     App
   },
   template: '<App/>',
-  store: store
+  store,
+  sockets: {
+    connect () {
+      if (store.state.networkStatus === 'disconnected') {
+        store.dispatch('rejoinRooms')
+      }
+      store.commit('NETWORKSTATUS_CHANGE', 'connected')
+    },
+    disconnect () {
+      console.log('socket disconnected')
+      store.commit('NETWORKSTATUS_CHANGE', 'disconnected')
+    }
+  }
 })
 
 export { io }

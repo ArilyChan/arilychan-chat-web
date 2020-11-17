@@ -10,7 +10,47 @@ export default {
       if (typeof date === 'string') {
         date = new Date(date)
       }
-      return date.getHours() + ':' + date.getMinutes()
+      const time = date.getHours() + ':' + date.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })
+      const now = new Date()
+      if (date.toDateString() === now.toDateString()) return time
+      else return date.toDateString() + ' ' + time
+    }
+  },
+  methods: {
+    CQImageToSrc (line) {
+      let src = line.split('file=')[1]
+      src = src.split(',')[0]
+      src = src.split(']')[0]
+      if (!src.startsWith('base64://')) { return src }
+
+      src = src.slice(9)
+      // Decode the string
+      const decoded = window.atob(src)
+
+      // if the file extension is unknown
+      let extension
+      // do something like this
+      const lowerCase = decoded.toLowerCase()
+      if (lowerCase.indexOf('png') !== -1) extension = 'png'
+      else if (lowerCase.indexOf('jpg') !== -1 || lowerCase.indexOf('jpeg') !== -1) { extension = 'jpg' } else extension = 'tiff'
+
+      return 'data:image/' + extension + ';base64,' + src
+    },
+    textCQCode (line) {
+      return line.startsWith('[CQ:')
+    },
+    htmlCQCode (line) {
+      return false
+    },
+    CQCodeToText (line) {
+      const type = line.slice(4).split(',')[0]
+      switch (type) {
+        case 'at':
+          return `@${line.split('qq=')[1].split(',')[0].slice(0, -1)}`
+
+        default:
+          break
+      }
     }
   }
 }
@@ -31,9 +71,11 @@ export default {
                 <div style="display: flex; flex-direction: column; flex-grow: 0">
                     <span v-if="!item.self"><small>{{item.user.name || item.user.id }}</small></span>
                     <div class="text" style="width: fit-content">
-                        <p v-for="(line,index) of item.content.split('\n')" :key="index" style="line-height: 1.2">
-                            {{line}}
-                        </p>
+                        <div v-for="(line,index) of item.content.split('\n')" :key="index">
+                            <img v-if="line.startsWith('[CQ:image')" :src="CQImageToSrc(line)" class="chat-image">
+                            <p v-else-if="textCQCode(line)">{{CQCodeToText(line)}}</p>
+                            <p v-else>{{line}}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,21 +107,23 @@ export default {
     }
     .avatar {
         float: left;
-        margin: 0 10px 0 0;
+        margin: 20px 1rem 0 0;
         border-radius: 3px;
     }
     .text {
-        display: inline-block;
+        display: flex;
+        flex-direction: column;
         position: relative;
-        padding: 0 10px;
+        padding: calc(1rem / 3 * 2);
         max-width: ~'calc(100% - 40px)';
         min-height: 30px;
-        line-height: 2.5;
+        line-height: 1;
         font-size: 12px;
         text-align: left;
         word-break: break-all;
         background-color: #fafafa;
         border-radius: 4px;
+        max-width: 60%;
 
         &:before {
             content: " ";
@@ -88,6 +132,14 @@ export default {
             right: 100%;
             border: 6px solid transparent;
             border-right-color: #fafafa;
+        }
+        .chat-image{
+            border-radius: 4px;
+            width: 100%;
+        }
+        p {
+            margin: 0;
+            line-height: 1.5
         }
     }
 

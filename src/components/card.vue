@@ -15,6 +15,17 @@ export default {
           name: val
         })
       }
+    },
+    token: {
+      get () {
+        return this.user.token
+      },
+      set (val) {
+        if (val === '') val = null
+        this.changeUserData({
+          token: val
+        })
+      }
     }
   },
   methods: {
@@ -30,9 +41,17 @@ export default {
 <div class="card">
     <header style="display: flex; align-items: self-end;">
         <img class="avatar" width="40" height="40" :alt="user.name" :src="user.img">
-        <input class="search" v-model="name" placeholder="your id" />
+        <div>
+          <input class="search" v-model="name" placeholder="your name" />
+        </div>
     </header>
     <footer>
+        <p>在下面填你的token</p>
+        <input class="search" v-model="token" placeholder="token" />
+        <p>发送 !bindqq 可以生成一个</p>
+        <p>发送token给小阿日绑定qq</p>
+        <p>不需要绑定qq可以不填</p>
+        <hr>
         <!--// eslint-disable-next-line vue/valid-v-on -->
         <input class="search" type="text" placeholder="search user..." @keyup="onKeyup">
     </footer>

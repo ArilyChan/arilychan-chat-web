@@ -35,9 +35,9 @@ export default {
 
 <style lang="less" scoped>
 #chat {
-    margin: 20px auto;
-    width: 800px;
-    height: 600px;
+    // margin: 20px auto;
+    width: 100vw;
+    height: 100vh;
 
     overflow: hidden;
     border-radius: 3px;

@@ -27,10 +27,7 @@ export default {
             <img class="avatar"  width="30" height="30" :alt="item.user.name" :src="item.user.img">
             <p class="name">{{item.user.name}}</p>
         </li>
-        <li @click.stop="joinRoom({
-            id: 'arilychan',
-            name: '小阿日'
-        })">
+        <li @click.stop="joinRoom()">
             <input v-model="joinRoomId"/>
             <p class="name">create new room</p>
         </li>
